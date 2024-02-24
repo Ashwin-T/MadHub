@@ -46,8 +46,4 @@ Thumbs.db
 Desktop.ini
 
 # Certs
-certs/
-
-# Outputs
-dist/
-index.js
+# certs/
