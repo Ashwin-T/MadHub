@@ -1,23 +1,15 @@
-import express from 'express';
-import { initializeApp, cert } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
-import dotenv from 'dotenv';
+const express = require('express');
+const dotenv = require('dotenv');
+
+const vision = require('@google-cloud/vision');
+const { getStorage, ref, listAll } = require("firebase/storage");
+const { fbApp } = require('./firebase');
 
 dotenv.config();
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 console.log('Starting backend in ' + (isDevelopment ? 'development' : 'production') + ' mode');
-
-const serviceAccountPath = isDevelopment
-  ? './certs/madhub-app-firebase-adminsdk-p10dk-9e73c4834b'
-  : '/etc/secrets/madhub-app-firebase-adminsdk-p10dk-9e73c4834b';
-
-initializeApp({
-  credential: cert(require(serviceAccountPath)),
-});
-
-const db = getFirestore();
 
 const app = express();
 const port = 8080;
@@ -34,6 +26,9 @@ app.listen(port, () => {
 
 app.get('/api', async (req, res) => {
   res.send('GET request received');
+
+  ocr('test');
+
 });
 
 async function checkCred(uid) {
@@ -53,4 +48,36 @@ async function checkCred(uid) {
     console.error('Error checking token:', error);
     return false; // Return false in case of an error
   }
+}
+
+async function ocr(directory) {
+  console.log('ocr called');
+  const storage = getStorage(fbApp);
+
+  // Create a reference under which you want to list
+  const listRef = ref(storage, directory);
+
+  // Find all the prefixes and items.
+  listAll(listRef)
+    .then((res) => {
+      res.items.forEach((itemRef) => {
+        console.log(itemRef);
+      });
+    }).catch((error) => {
+      console.log("err");
+      // Uh-oh, an error occurred!
+    });
+
+  /*
+  const bucketName = 'madhub-app.appspot.com';
+  const fileName = 'path/to/image.png';
+
+  const client = new vision.ImageAnnotatorClient();
+  
+  const [result] = await client.documentTextDetection(
+    `gs://${bucketName}/${fileName}`
+  );
+
+  const fullTextAnnotation = result.fullTextAnnotation;
+  console.log(fullTextAnnotation.text);*/
 }
