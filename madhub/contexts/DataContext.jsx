@@ -19,7 +19,7 @@ const DataProvider = ({ children }) => {
   const [authLoading, setAuthLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [needsSetup, setNeedsSetup] = useState(false);
-  
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
       setUser(authUser);
@@ -37,6 +37,9 @@ const DataProvider = ({ children }) => {
       const userDoc = await getDoc(userDocRef);
       if(userDoc.exists()) {
         setUserData(userDoc.data());
+      }
+      else {
+        setNeedsSetup(true);
       }
     }
 
@@ -94,14 +97,7 @@ const DataProvider = ({ children }) => {
       const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password.trim());
       
       // Signed in
-      const user = userCredential.user;
-  
-      // Add user to database
-      const docRef = doc(db, 'users', user.uid);
-      await setDoc(docRef, {
-        email: user.email,
-        uid: user.uid,
-      });
+      const user = userCredential.user;    
   
       setUser(user);
       setIsRegistering(false);
@@ -111,6 +107,24 @@ const DataProvider = ({ children }) => {
     }
   };  
 
+  const handleSetup = async(classArray, setError) => {
+  
+    if (!classArray.length) {
+      alert('Please add at least one class');
+      return;
+    }
+
+    const docRef = doc(db, 'users', user.uid);
+
+    await setDoc(docRef, {
+      email: user.email,
+      uid: user.uid,
+      classes: classArray,
+    });
+
+    setNeedsSetup(false);
+  }
+
   const value = {
     user,
     userData,
@@ -118,9 +132,11 @@ const DataProvider = ({ children }) => {
     handleSignOut,
     handleRegister,
     isRegistering,
+    handleSetup,
     setIsRegistering,
     loading,
-    authLoading
+    authLoading,
+    needsSetup
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

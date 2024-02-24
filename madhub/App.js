@@ -9,10 +9,11 @@ import Login from './screens/Login';
 import Register from './screens/Register';
 import Loading from './screens/Loading';
 import Home from './screens/Home';
+import Setup from './screens/Setup';
 
 const App = () => {
 
-  const { user, isRegistering, loading, authLoading } = useData();
+  const { user, isRegistering, loading, authLoading, needsSetup} = useData();
   const Stack = createStackNavigator();
 
   return (
@@ -28,7 +29,14 @@ const App = () => {
                 <>
                   {user ? (
                     <>
-                      <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+                      {
+                        needsSetup ? (
+                          <Stack.Screen name="Setup" component={Setup} options={{ headerShown: false }} />
+                        ) : 
+                        <>
+                          <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+                        </>
+                      }
                     </>
                   ) : (
                     <>
