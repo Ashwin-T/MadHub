@@ -7,13 +7,31 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
+
+
+// The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
+const {logger} = require("firebase-functions");
 const {onRequest} = require("firebase-functions/v2/https");
-const logger = require("firebase-functions/logger");
+const {onDocumentCreated} = require("firebase-functions/v2/firestore");
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+// The Firebase Admin SDK to access Firestore.
+const {initializeApp} = require("firebase-admin/app");
+const {getFirestore} = require("firebase-admin/firestore");
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+initializeApp();
+
+exports.testing = onDocumentCreated("testing/{idS}", (event) => {
+    // Get an object representing the document
+    // e.g. {'name': 'Marie', 'age': 66}
+    const snapshot = event.data;
+    if (!snapshot) {
+        console.log("No data associated with the event");
+        return;
+    }
+    const data = snapshot.data();
+    console.log(data)
+    // access a particular field as you would any JS property
+    //const name = data.name;
+
+    // perform more operations ...
+});
