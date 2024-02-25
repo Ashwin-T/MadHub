@@ -7,17 +7,15 @@ const Setup = () => {
   const [classes, setClasses] = useState([]);
   const [className, setClassName] = useState('');
   const [startTime, setStartTime] = useState('');
-  const [stopTime, setStopTime] = useState('');
   const { handleSetup } = useData();
 
   const addClass = () => {
-    if (className && startTime && stopTime) {
-      const newClass = { className, startTime, stopTime };
+    if (className && startTime ) {
+      const newClass = { className, startTime };
       setClasses([...classes, newClass]);
       // Clear input fields after adding class
       setClassName('');
       setStartTime('');
-      setStopTime('');
     } else {
       alert('Please fill in all fields');
     }
@@ -47,12 +45,7 @@ const Setup = () => {
         value={startTime}
         onChangeText={text => setStartTime(text)}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Stop Time"
-        value={stopTime}
-        onChangeText={text => setStopTime(text)}
-      />
+      
       <Button moreStyles={{ backgroundColor: 'green' }}  title="Add Class" onPress={addClass} />
       <Button title="Register Now" onPress={() => handleSetup(classes)} />
     </SafeAreaView>

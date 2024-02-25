@@ -1,19 +1,45 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, SafeAreaView} from 'react-native';
+import { View, Text, Pressable, StyleSheet, SafeAreaView, Image} from 'react-native';
 import { useData } from '../contexts/DataContext';
 import Button from '../components/Button';
 
-const Home = () => {
-  const { user, userData } = useData();
+const Home = ({ navigation }) => {
+  const { user, loading, currentGroup, handleSignOut} = useData();
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.titleView}>
-        <Text style={styles.title}>Home</Text>
-        <Text style={styles.text}>Welcome {user.email}</Text>
-        <Pressable style={styles.text} onPress={() => signOut(auth)} >
-          <Text style={styles.text}>Sign Out</Text>
-        </Pressable>
+        <View style={styles.header}>
+          <Text style={styles.title}>Hi There</Text>
+          <Pressable onPress={handleSignOut}>
+            <Text style={styles.signOutText}>Sign Out</Text>
+          </Pressable>
+        </View>
+        <Text style={styles.text}>Welcome {user?.email}</Text>
+      </View>      
+
+      <Image source={require('../assets/study.png')} style={{width: '100%', height: 350}} />
+
+      <Text style={[styles.text, {textAlign: 'left', width: '95%', marginVertical: 12, fontWeight: 'bold', color:'black', fontSize: 24}]}>What Would You Like To Do?</Text>
+      
+      <View style={{width: '100%', display: 'flex', justifyContent : 'center', alignItem: 'center'}}>
+        <Button title="Join Live Lecture Discussions" onPress={() => navigation.navigate('LectureChat')} />
+
+        <View style={styles.separator}>
+          <Text>OR</Text>
+        </View>
+        {
+          currentGroup ? (
+            <View>
+              <Button title = {`View Curr Group for ${currentGroup.className}`} moreStyles = {{backgroundColor: 'green'}} onPress={() => navigation.navigate('Group', {group: currentGroup.id})} />
+            </View>
+          ) : (
+            <View style={styles.buttonGroup}>
+              <Button title="Create a Study Spot" moreStyles = {{backgroundColor: 'green'}} onPress={() => navigation.navigate('CreateStudyGroup')} />
+              <Button title="Join a Study Spot" moreStyles = {{backgroundColor: 'orange'}} onPress={() => navigation.navigate('JoinStudyGroup')} />
+            </View>
+            )
+        }
       </View>
     </SafeAreaView>
   );
@@ -21,8 +47,8 @@ const Home = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
+    flex:1,
+    justifyContent: 'flex-start',
     alignItems: 'center',
     width: '100%',
     backgroundColor: 'white',
@@ -32,40 +58,47 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     padding: 16,
   },
+  header: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+    width: '100%',
+  },
   title: {
     fontSize: 38,
-    margin: 8,
-    color: 'black',
     fontWeight: 'bold',
-    textAlign: 'left',
+    color: 'black',
   },
-  input: {
-    width: '85%',
-    borderWidth: 1,
-    borderColor: 'grey',
-    marginTop: 8,
-    marginBottom: 16,
-    borderRadius: 8,
-    padding: 16,
+  signOutText: {
+    fontSize: 16,
+    color: 'red',
+    marginLeft: 'auto',
   },
   text: {
     fontSize: 16,
-    margin: 4,
     textAlign: 'center',
     color: 'grey',
-  },
-  classList: {
-    width: '85%',
     marginBottom: 16,
   },
-  classListTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 8,
+  buttonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  classItem: {
-    fontSize: 16,
-    marginBottom: 4,
+  bigText : {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'black',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  separator: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 10,
+    fontWeight: 'bold',
   },
 });
 
